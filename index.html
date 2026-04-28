@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TruthPulse – Fake News Detector</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ── HEADER ─────────────────────────────────────────── -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="#" class="logo">
+        <span class="logo-icon">⚡</span>
+        <span>TruthPulse</span>
+      </a>
+      <nav class="nav">
+        <a href="#detector">Detector</a>
+        <a href="#how">How it works</a>
+        <a href="#about">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ── HERO ───────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-badge">AI-Powered Misinformation Detection</div>
+      <h1 class="hero-title">
+        Detect Fake News<br/>
+        <span class="accent">Instantly.</span>
+      </h1>
+      <p class="hero-sub">Paste text, upload images, or write in Hindi / Marathi — TruthPulse analyses it in seconds.</p>
+      <a href="#detector" class="btn btn-hero">Start Detecting</a>
+    </div>
+    <div class="hero-glow"></div>
+  </section>
+
+  <!-- ── STATS BAR ───────────────────────────────────────── -->
+  <div class="stats-bar">
+    <div class="container stats-inner">
+      <div class="stat"><strong>95%</strong><span>Accuracy</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><strong>&lt;3s</strong><span>Analysis time</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><strong>3</strong><span>Languages supported</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><strong>OCR</strong><span>Image text extraction</span></div>
+    </div>
+  </div>
+
+  <!-- ── DETECTOR ───────────────────────────────────────── -->
+  <section class="detector-section" id="detector">
+    <div class="container">
+      <h2 class="section-title">Analyse Content</h2>
+      <p class="section-sub">Choose a mode, select your language, and hit Analyse.</p>
+
+      <!-- Language row -->
+      <div class="lang-row">
+        <span class="lang-label">Language:</span>
+        <div class="lang-pills">
+          <button class="lang-pill active" data-lang="en">🇬🇧 English</button>
+          <button class="lang-pill" data-lang="hi">🇮🇳 Hindi</button>
+          <button class="lang-pill" data-lang="mr">🟠 Marathi</button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="text">📝 Text</button>
+        <button class="tab" data-tab="image">🖼️ Image</button>
+      </div>
+
+      <!-- Text panel -->
+      <div class="panel active" id="panel-text">
+        <textarea
+          id="textInput"
+          class="textarea"
+          placeholder="Paste news text, headlines, or any content here…"
+          maxlength="10000"
+        ></textarea>
+        <div class="char-count"><span id="charCount">0</span> / 10,000 characters</div>
+      </div>
+
+      <!-- Image panel -->
+      <div class="panel" id="panel-image">
+        <label class="dropzone" id="dropzone" for="imageInput">
+          <span class="drop-icon">📁</span>
+          <p class="drop-main">Drag & drop an image or <span class="link-text">browse</span></p>
+          <p class="drop-sub">JPG, PNG, WebP up to 20 MB — text will be extracted via OCR</p>
+          <input type="file" id="imageInput" accept="image/*" hidden />
+        </label>
+        <div class="preview-wrap" id="previewWrap" style="display:none">
+          <img id="previewImg" src="" alt="Preview" class="preview-img" />
+          <button class="clear-btn" id="clearImg">✕ Remove</button>
+        </div>
+      </div>
+
+      <button class="btn btn-analyse" id="analyseBtn">
+        <span id="btnText">⚡ Analyse Now</span>
+        <span id="btnSpinner" class="spinner" style="display:none"></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ── RESULT ─────────────────────────────────────────── -->
+  <section class="result-section container" id="resultSection" style="display:none">
+    <div class="result-card" id="resultCard">
+
+      <div class="result-header">
+        <div class="result-badge" id="resultBadge">–</div>
+        <div>
+          <div class="result-label" id="resultLabel">Verdict</div>
+          <div class="result-conf" id="resultConf">Confidence: –%</div>
+        </div>
+      </div>
+
+      <div class="result-detail" id="resultDetail"></div>
+
+      <!-- Confidence bar -->
+      <div class="conf-bar-wrap">
+        <div class="conf-bar-label">
+          <span>Real</span><span>Fake</span>
+        </div>
+        <div class="conf-bar-track">
+          <div class="conf-bar-fill" id="confBarFill" style="width:50%"></div>
+        </div>
+      </div>
+
+      <!-- Signals -->
+      <div id="signalsWrap" class="signals-wrap" style="display:none">
+        <div id="fakeSignals" class="signals fake-signals"></div>
+        <div id="realSignals" class="signals real-signals"></div>
+      </div>
+
+      <!-- Extracted text (images only) -->
+      <div id="extractedWrap" class="extracted-wrap" style="display:none">
+        <div class="extracted-title">📄 Extracted text from image</div>
+        <pre id="extractedText" class="extracted-text"></pre>
+      </div>
+
+      <!-- Translation notice -->
+      <div id="translationWrap" class="translation-wrap" style="display:none">
+        <div class="extracted-title">🌐 Translated to English for analysis</div>
+        <pre id="translatedText" class="extracted-text"></pre>
+      </div>
+
+      <button class="btn btn-reset" id="resetBtn">🔄 Analyse another</button>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ───────────────────────────────────── -->
+  <section class="how-section" id="how">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3>Input content</h3>
+          <p>Paste text or upload an image containing news, headlines, or social media posts.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3>Language detection</h3>
+          <p>Select English, Hindi, or Marathi. Non-English content is translated automatically before analysis.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3>AI analysis</h3>
+          <p>Our backend scans for linguistic patterns, sensationalist signals, and credibility indicators.</p>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-num">04</div>
+          <h3>Verdict</h3>
+          <p>Receive a clear REAL / FAKE / UNCERTAIN verdict with confidence score and signal breakdown.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ABOUT ──────────────────────────────────────────── -->
+  <section class="about-section" id="about">
+    <div class="container about-inner">
+      <div>
+        <h2 class="section-title left">About TruthPulse</h2>
+        <p>TruthPulse is an open-source fake news detection tool built with FastAPI and vanilla JS. It uses heuristic NLP signals to classify content and supports multilingual input via Google Translate.</p>
+        <p class="disclaimer">⚠️ No automated system is perfect. Always verify important claims through primary sources. TruthPulse is an evidence-assisted aid, not a definitive arbiter of truth.</p>
+      </div>
+      <div class="tech-stack">
+        <div class="tech-item">🐍 FastAPI</div>
+        <div class="tech-item">🔤 pytesseract OCR</div>
+        <div class="tech-item">🌐 googletrans</div>
+        <div class="tech-item">🎨 Vanilla JS</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span class="logo">⚡ TruthPulse</span>
+      <span>© 2025 TruthPulse. Built for truth.</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
